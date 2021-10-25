@@ -4,6 +4,8 @@
 #include <conio.h>
 #include <ctype.h>
 
+// commandq	edgu
+
 #define ADD 1
 #define SUB 2
 #define MUL 3
