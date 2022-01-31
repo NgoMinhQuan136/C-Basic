@@ -1,0 +1,10 @@
+Insertion Sort 
+    Số phần tử : 10000 - Time : 0,06s
+    Số phần tử : 30000 - Time : 0,537s
+    Số phần tử : 100000 - Time : 5,95s
+
+Quick Sort 
+    Số phần tử : 10000 - Time : 0,001s
+    Số phần tử : 30000 - Time : 0,003s
+    Số phần tử : 100000 - Time : 0,015s
+Kết luận : Quick Sort thực hiện tốn ít thời gian hơn

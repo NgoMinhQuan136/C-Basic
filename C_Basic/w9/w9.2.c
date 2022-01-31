@@ -1,8 +1,8 @@
-// C program for insertion sort 
+#include <stdlib.h>
 #include <math.h> 
 #include <stdio.h> 
+#include <time.h>
   
-/* Function to sort an array using insertion sort*/
 void insertionSort(int arr[], int n) 
 { 
     int i, key, j; 
@@ -10,9 +10,6 @@ void insertionSort(int arr[], int n)
         key = arr[i]; 
         j = i - 1; 
   
-        /* Move elements of arr[0..i-1], that are 
-          greater than key, to one position ahead 
-          of their current position */
         while (j >= 0 && arr[j] > key) { 
             arr[j + 1] = arr[j]; 
             j = j - 1; 
@@ -20,8 +17,7 @@ void insertionSort(int arr[], int n)
         arr[j + 1] = key; 
     } 
 } 
-  
-// A utility function to print an array of size n 
+
 void printArray(int arr[], int n) 
 { 
     int i; 
@@ -29,15 +25,29 @@ void printArray(int arr[], int n)
         printf("%d ", arr[i]); 
     printf("\n"); 
 } 
+
+void main() 
+{   time_t now = time(NULL);
+    clock_t start, end ;
+    	int* arr = NULL;
+    double time_use ;
+    int n;
+    //int arr[] = { 12, 11, 13, 5, 6 ,3 ,4, 10, 17, 18, 10, 100, 123, 134, 136, 136,16, 1999, 139, 947, 376, 263, 3892, 4947}; 
+	printf("Nhap so luong: ");
+	scanf("%d", &n);
+	arr = (int*)calloc(n, sizeof(int));
+	srand(now);
+	for (int i = 0; i < n; i++)
+	{
+		arr[i] = rand() % 1000;
+	}
+    start = clock();
+    int na = sizeof(arr) / sizeof(arr[0]); 
   
-/* Driver program to test insertion sort */
-int main() 
-{ 
-    int arr[] = { 12, 11, 13, 5, 6 }; 
-    int n = sizeof(arr) / sizeof(arr[0]); 
-  
-    insertionSort(arr, n); 
-    printArray(arr, n); 
-  
-    return 0; 
+    insertionSort(arr, na); 
+    end = clock();
+    time_use = (double)(end - start)/CLOCKS_PER_SEC;
+    printArray(arr, na); 
+    printf("Thoi gian chay : %2.5f", time_use);
+   // return 0; 
 } 

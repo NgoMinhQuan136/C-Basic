@@ -1,139 +1,178 @@
-#include <stdio.h>
-#include <conio.h>
-#include <string.h>
-#include <ctype.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 
-typedef struct _node
-{
-	char info;
+typedef struct node{
+	char value;
 	struct node *next;
 }node;
 
-typedef struct _list
-{
-	struct node *dau;
-}list;
+typedef struct stack{
+	node *top;
+}stack;
 
-void list_null(list &l)
-{
-	l.dau=NULL;
+stack* Init(){
+	stack *s;
+	s = (stack*)calloc(1, sizeof(stack));
+	return s;
 }
 
-node* tao(char a)
-{
-	node *p=new node;
-	if(p==NULL)return NULL;
-	p->info=a;
-	p->next=NULL;
-	return p;
+void push( stack *s, char i){
+	node *tmp;
+	tmp = (node*)calloc(1,sizeof(node));
+	tmp->value = i;
+	tmp->next = s->top;
+	s->top = tmp;
 }
 
-void add_dau(list &l,node *p)
-{
-	if(l.dau==NULL)
-		l.dau=p;
-	else
-	{
-		p->next=l.dau;
-		l.dau=p;
+char pop( stack *s){
+	float i;
+	node *tmp;
+	tmp = s->top;
+	i = tmp->value;
+	s->top = tmp->next;
+	free( tmp);
+	return i;
+}
+
+void destroy( stack *s){
+	while( s->top != NULL){
+		pop(s);
 	}
+	free(s);
 }
 
-int uu_tien(char c)
-{
-	if(c=='+'||c=='-')
-		return 1;
-	if(c=='*'||c=='/'||c=='%')
+
+typedef struct nodef{
+	float value;
+	struct node *next;
+}nodef;
+
+typedef struct stackf{
+	node *top;
+}stackf;
+
+stackf* Initf(){
+	stackf *s;
+	s = (stackf*)calloc(1, sizeof(stackf));
+	return s;
+}
+
+void pushf( stackf *s, float i){
+	node *tmp;
+	tmp = (node*)calloc(1,sizeof(node));
+	tmp->value = i;
+	tmp->next = s->top;
+	s->top = tmp;
+}
+
+char popf( stackf *s){
+	float i;
+	node *tmp;
+	tmp = s->top;
+	i = tmp->value;
+	s->top = tmp->next;
+	free( tmp);
+	return i;
+}
+
+void destroyf( stackf *s){
+	while( s->top != NULL){
+		popf(s);
+	}
+	free(s);
+}
+
+
+int getPriority( char value){
+	if( value == '*' || value == '/'){
 		return 2;
+	}else{
+		return 1;
+	}
+}
+
+char *convert( char trungto[]){
+	int i;
+	int idx = 0;
+	char op1, op2;
+	char *hauto = (char*)malloc( strlen( trungto) + 1);
+	stack *s = Init();
+	for( i = 0; i < strlen( trungto); i++){
+		if( trungto[i] >= '0' && trungto[i] <= '9'){
+			hauto[idx] = trungto[i];
+			idx++;
+		}else{
+			if( s->top != NULL){
+				op1 = pop(s);
+				op2 = trungto[i];
+				if( getPriority(op1) >= getPriority(op2)){
+					hauto[idx] = op1;
+					idx++;
+					push( s, op2);
+				}else{
+					push( s, op1);
+					push( s, op2);
+				}
+			}else{
+				push( s, trungto[i]);
+			}
+		}
+	}
+
+	while( s->top != NULL){
+		hauto[idx] = pop( s);
+		idx++;
+	}
+	hauto[idx] = '\0';
+	free(s);
+	return hauto;
+}
+
+float result( char hauto[], stackf *s){
+	s = Initf();
+	int i;
+	float value1, value2;
+	for( i = 0; i < strlen(hauto); i++){
+		if( hauto[i] >= '0' && hauto[i] <= '9' ){
+			value1 =  hauto[i] - '0';
+			pushf( s, value1);
+		}else if ( hauto[i] == '+'){
+			value1 =  popf(s);
+			value2 =  popf(s);
+			value2 += value1;
+			pushf( s,value2);
+		}else if ( hauto[i] == '-'){
+			value1 =  popf(s);
+			value2 =  popf(s);
+			value2 -= value1;
+			pushf( s, value2);
+		}else if ( hauto[i] == '*'){
+			value1 =  popf(s);
+			value2 =  popf(s);
+			value2 *= value1;
+			pushf( s, value2);
+		}else if ( hauto[i] == '/'){
+			value1 =  (float)popf(s);
+			value2 =  (float)popf(s);
+			value2 /= value1;
+			pushf( s, value2);
+		}
+	}
+	return popf(s);
+}
+int main(){
+	char trungto[20];
+	char *hauto;
+	printf("Nhap vao bieu thuc:\n");
+	fflush(stdin);
+	gets(trungto);
+	hauto = convert( trungto);
+	printf("Output:\n");
+	printf("%s\n", hauto);
+
+	stackf *s;
+	printf("%5.1f", result( hauto, s));
+	destroyf( s);
 	return 0;
-}
-
-void trung_hau(list &l,char *chuoi)
-{
-	int n=strlen(chuoi);
-	char hauto[50];int j=0;
-
-	for(int i=0;i<n;i++)
-	{
-		char c=chuoi[i];
-
-		if(isalnum(c)!=0)
-		{
-			hauto[j++]=c;
-		}
-		else
-		{
-			if(c=='(')
-			{
-				node *p=tao(c);
-				add_dau(l,p);
-			}
-			else
-			{
-				if(c==')')
-				{
-					while(l.dau->info!='(')
-					{
-						node *p=l.dau;
-						hauto[j++]=l.dau->info;
-						l.dau=l.dau->next;
-						delete p;
-					}
-					node *p=l.dau;
-					l.dau=l.dau->next;
-					delete p;
-				}
-				else
-				{
-					while(uu_tien(l.dau->info)>=uu_tien(c)&&l.dau!=NULL)///lỗi
-					{
-						node *p=l.dau;
-						hauto[j++]=l.dau->info;
-						l.dau=l.dau->next;
-						delete p;
-					}
-					node *p=tao(c);
-					add_dau(l,p);	
-				}
-			}
-		}
-	}
-	while(l.dau!=NULL)
-	{
-		node *p=l.dau;
-		hauto[j++]=l.dau->info;
-		l.dau=l.dau->next;
-		delete p;
-	}
-	for(int i=0;i<j;i++)
-	{
-		printf("%c",hauto[i]);
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-void main()
-{
-	list l;
-	list_null(l);
-
-	char bt[50];
-	printf("nhap bieu thuc doi sang hau to ");
-	gets(bt);
-
-	trung_hau(l,bt);
-	
-
-
-	getch();
 }
